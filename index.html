@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="shortcut icon" type="image/png" href="spongebob1.png" />
+    <title>Get Spongebob!</title>
+    <link href='https://fonts.googleapis.com/css?family=Amatic+SC:400,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <h1>Can You Catch Spongebob? <span class="score">0</span></h1>
+    <button class='btn glow' onClick="startGame()">Start!</button>
+
+    <div class="game">
+        <div class="hole hole1">
+            <div class="mole"></div>
+        </div>
+        <div class="hole hole2">
+            <div class="mole"></div>
+        </div>
+        <div class="hole hole3">
+            <div class="mole"></div>
+        </div>
+        <div class="hole hole4">
+            <div class="mole"></div>
+        </div>
+        <div class="hole hole5">
+            <div class="mole"></div>
+        </div>
+        <div class="hole hole6">
+            <div class="mole"></div>
+        </div>
+    </div>
+
+    <script>
+        const holes = document.querySelectorAll('.hole');
+        const scoreBoard = document.querySelector('.score');
+        const moles = document.querySelectorAll('.mole');
+        const btn = document.querySelector('.btn')
+        let lastHole;
+        let timeUp = false;
+        let score = 0;
+
+        //random time up
+        function randomTime(min, max) {
+            return Math.round(Math.random() * (max - min) + min);
+        }
+        // pick a random hole
+        function randomHole(holes) {
+            const idx = Math.floor(Math.random() * holes.length);
+            const hole = holes[idx];
+            if (hole === lastHole) { // dont be the same hole twice
+                return randomHole(holes);
+            }
+            lastHole = hole;
+            return hole;
+        }
+
+        // peep out function
+        function peep() {
+            const time = randomTime(300, 1200);
+            const hole = randomHole(holes);
+            hole.classList.add('up');
+            setTimeout(() => {
+                hole.classList.remove('up');
+                if (!timeUp) peep();
+            }, time);
+        }
+
+        // start game reset score
+        function startGame() {
+            btn.classList.add('paused');
+            scoreBoard.textContent = 0;
+            timeUp = false;
+            score = 0;
+            peep();
+            setTimeout(() => timeUp = true, 10000)
+        }
+        function bonk(e) {
+            if (!e.isTrusted) return; // cheater!
+            score++;
+            this.parentNode.classList.remove('up');
+            scoreBoard.textContent = score;
+        }
+        moles.forEach(mole => mole.addEventListener('click', bonk));
+    </script>
+</body>
+
+</html>
